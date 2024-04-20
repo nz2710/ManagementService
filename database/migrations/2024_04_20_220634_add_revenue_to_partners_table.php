@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ModifyCategory extends Migration
+class AddRevenueToPartnersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class ModifyCategory extends Migration
      */
     public function up()
     {
-        Schema::table('categories', function (Blueprint $table) {
-            $table->bigInteger('parent_id')->nullable()->change();
+        Schema::table('partners', function (Blueprint $table) {
+            $table->decimal('revenue', 10, 2)->default(0);
         });
     }
 
@@ -25,6 +25,8 @@ class ModifyCategory extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('partners', function (Blueprint $table) {
+            //
+        });
     }
 }
