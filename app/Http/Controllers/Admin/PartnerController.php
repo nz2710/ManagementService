@@ -31,7 +31,7 @@ class PartnerController extends Controller
             $partner = $partner->where('phone', 'like', '%' . $phone . '%');
         }
 
-        $partner=$partner->paginate(10);
+        $partner=$partner->paginate(5);
 
 
         return response()->json([
