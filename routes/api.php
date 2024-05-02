@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DepotController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\VehicleController;
+use App\Http\Controllers\Admin\DashBoardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,5 +59,15 @@ Route::group([
         Route::get('vehicle/{id}', [VehicleController::class, 'show']);
         Route::put('vehicle/{id}', [VehicleController::class, 'update']);
         Route::delete('vehicle/{id}', [VehicleController::class, 'destroy']);
+
+        //Dashboard routes
+        Route::get('dashboard/total-orders', [DashBoardController::class, 'getTotalOrders']);
+        Route::get('dashboard/total-revenue', [DashBoardController::class, 'getTotalRevenue']);
+        Route::get('dashboard/total-partners', [DashBoardController::class, 'getTotalPartners']);
+        Route::get('dashboard/total-vehicles', [DashBoardController::class, 'getTotalVehicles']);
+        Route::get('dashboard/total-depots', [DashBoardController::class, 'getTotalDepots']);
+        Route::get('dashboard/top-partners-by-revenue', [DashBoardController::class, 'getTopPartnersByRevenue']);
+        Route::get('dashboard/monthly-revenue', [DashBoardController::class, 'getMonthlyRevenue']);
+
     });
 });

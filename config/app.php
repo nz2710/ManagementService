@@ -232,4 +232,6 @@ return [
 
     ],
 
+    'gateway_url' => env('GATEWAY_URL', 'http://host.docker.internal:81'),
+
 ];
