@@ -14,20 +14,4 @@ class Partner extends Model
         return $this->hasMany('App\Models\Order');
     }
 
-    // public function getRevenueAttribute()
-    // {
-    //     return $this->orders->sum('price');
-    // }
-
-    // public function getCommissionAttribute()
-    // {
-    // $revenue = $this->getRevenueAttribute();
-    // $discount = $this->discount; // Assuming 'discount' is a column in the 'partners' table
-
-    // $commission = $revenue * ($discount / 100);
-
-    // return $commission;
-    // }
-
-
 }

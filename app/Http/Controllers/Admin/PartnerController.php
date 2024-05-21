@@ -15,7 +15,7 @@ class PartnerController extends Controller
         $address = $request->input('address');
         $phone = $request->input('phone');
         $orderBy = $request->input('order_by', 'id');
-		$sortBy = $request->input('sort_by', 'asc');
+        $sortBy = $request->input('sort_by', 'asc');
 
         $partner = Partner::orderBy($orderBy, $sortBy);
 
@@ -31,7 +31,7 @@ class PartnerController extends Controller
             $partner = $partner->where('phone', 'like', '%' . $phone . '%');
         }
 
-        $partner=$partner->paginate(5);
+        $partner = $partner->paginate(10);
 
 
         return response()->json([
@@ -40,6 +40,7 @@ class PartnerController extends Controller
             'data' => $partner
         ]);
     }
+
 
     public function store(Request $request)
     {
@@ -53,6 +54,9 @@ class PartnerController extends Controller
         $partner->register_date = Carbon::today();
         $partner->address = $request->address;
         $partner->phone = $request->phone;
+        $partner->discount = $request->input('discount', 10.00);
+        $partner->date_of_birth = $request->date_of_birth;
+        $partner->gender = $request->gender;
         $partner->save();
         return response()->json([
             'success' => true,
@@ -61,14 +65,30 @@ class PartnerController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $partner = Partner::with('orders')->find($id);
+        $perPage = $request->input('pageSize', 5);
+        $page = $request->input('page', 1);
+
+        $partner = Partner::withCount('orders')->find($id);
+
         if ($partner) {
+            $orders = $partner->orders()->paginate($perPage, ['*'], 'page', $page);
+
+            $data = [
+                'partner' => $partner,
+                'orders' => $orders->items(),
+            ];
+
+
+
             return response()->json([
                 'success' => true,
                 'message' => 'Partner found',
-                'data' => $partner
+                'data' => $data,
+                'per_page' => $orders->perPage(),
+                'current_page' => $orders->currentPage(),
+                'last_page' => $orders->lastPage(),
             ]);
         } else {
             return response()->json([
@@ -79,15 +99,18 @@ class PartnerController extends Controller
         }
     }
 
+
     public function update(Request $request, $id)
     {
         $partner = Partner::find($id);
         if ($partner) {
             $partner->name = $request->name ?? $partner->name;
-            $partner->register_date = $request->register_date ?? $partner->register_date;
+            // $partner->register_date = $request->register_date ?? $partner->register_date;
             $partner->address = $request->address ?? $partner->address;
             $partner->phone = $request->phone ?? $partner->phone;
             $partner->discount = $request->discount ?? $partner->discount;
+            $partner->date_of_birth = $request->date_of_birth ?? $partner->date_of_birth;
+            $partner->gender = $request->gender ?? $partner->gender;
             $partner->status = $request->status ?? $partner->status;
             $partner->save();
             return response()->json([
@@ -121,5 +144,15 @@ class PartnerController extends Controller
                 'data' => null
             ]);
         }
+    }
+
+    public function getAll()
+    {
+        $partners = Partner::all();
+        return response()->json([
+            'success' => true,
+            'message' => 'List of all partners',
+            'data' => $partners
+        ]);
     }
 }

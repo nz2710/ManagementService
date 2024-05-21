@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DepotController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\DashBoardController;
 
@@ -28,7 +29,7 @@ Route::group([
 ], function ($router) {
 
     Route::group([
-        // 'middleware' => ['auth:sanctum'],
+        'middleware' => ['authAdmin'],
         'namespace' => 'Admin',
         'prefix' => 'admin'
     ], function ($router) {
@@ -52,6 +53,7 @@ Route::group([
         Route::get('partner/{id}', [PartnerController::class, 'show']);
         Route::put('partner/{id}', [PartnerController::class, 'update']);
         Route::delete('partner/{id}', [PartnerController::class, 'destroy']);
+        Route::get('getAll', [PartnerController::class, 'getAll']);
 
         //Vehicle routes
         Route::get('vehicle', [VehicleController::class, 'index']);
@@ -60,14 +62,24 @@ Route::group([
         Route::put('vehicle/{id}', [VehicleController::class, 'update']);
         Route::delete('vehicle/{id}', [VehicleController::class, 'destroy']);
 
+        //Product routes
+        Route::get('product', [ProductController::class, 'index']);
+        Route::post('product', [ProductController::class, 'store']);
+        Route::get('product/{id}', [ProductController::class, 'show']);
+        Route::post('product/{id}', [ProductController::class, 'update']);
+        Route::delete('product/{id}', [ProductController::class, 'destroy']);
+
         //Dashboard routes
         Route::get('dashboard/total-orders', [DashBoardController::class, 'getTotalOrders']);
         Route::get('dashboard/total-revenue', [DashBoardController::class, 'getTotalRevenue']);
         Route::get('dashboard/total-partners', [DashBoardController::class, 'getTotalPartners']);
         Route::get('dashboard/total-vehicles', [DashBoardController::class, 'getTotalVehicles']);
+        Route::get('dashboard/total-products', [DashBoardController::class, 'getTotalProduct']);
         Route::get('dashboard/total-depots', [DashBoardController::class, 'getTotalDepots']);
+        Route::get('dashboard/total-all', [DashBoardController::class, 'getTotalAll']);
         Route::get('dashboard/top-partners-by-revenue', [DashBoardController::class, 'getTopPartnersByRevenue']);
         Route::get('dashboard/monthly-revenue', [DashBoardController::class, 'getMonthlyRevenue']);
+        Route::get('dashboard/revenue-summary', [DashBoardController::class, 'getRevenueSummary']);
 
     });
 });
