@@ -38,6 +38,17 @@ class ProductController extends Controller
             'data' => $product
         ]);
     }
+
+    public function getAll()
+
+    {
+        $product = Product::where('status','active')->get(['id', 'name', 'sku']);
+        return response()->json([
+            'success' => true,
+            'message' => 'List of all products',
+            'data' => $product
+        ]);
+    }
     public function store(Request $request)
     {
         $validatedData = $request->validate([

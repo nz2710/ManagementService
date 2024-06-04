@@ -14,7 +14,7 @@ class AddPartnerIdToOrdersTable extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->unsignedBigInteger('partner_id')->after('id');
+            $table->unsignedBigInteger('partner_id')->after('id')->nullable();
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
         });
     }

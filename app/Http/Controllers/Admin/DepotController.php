@@ -44,22 +44,28 @@ class DepotController extends Controller
 
         $client = new Client();
         $address = $request->address;
-        $response = $client->get("https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$this->apiKey");
+        $apiKey = 'VWEykUxNr5f4DReznrCTAtui2DL8iuXXdjapLuJv';
+
+        // Gọi Goong.io Geocoding API để lấy thông tin địa lý từ địa chỉ
+        $response = $client->get("https://rsapi.goong.io/geocode?address=" . urlencode($address) . "&api_key=$apiKey");
         $responseBody = json_decode($response->getBody(), true);
 
-        if (empty($responseBody['features'])) {
+        if (empty($responseBody['results'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Address does not exist',
             ], 400);
         }
 
-        $coordinates = $responseBody['features'][0]['geometry']['coordinates'];
+        $location = $responseBody['results'][0]['geometry']['location'];
+        $latitude = $location['lat'];
+        $longitude = $location['lng'];
         $depot = new Depot();
         $depot->address = $request->address;
-        $depot->longitude = $coordinates[0];
-        $depot->latitude = $coordinates[1];
+        $depot->longitude = $longitude;
+        $depot->latitude = $latitude;
         $depot->name = $request->name;
+        $depot->status = 'Active';
         $depot->save();
 
         return response()->json([

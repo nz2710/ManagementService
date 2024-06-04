@@ -17,7 +17,7 @@ class OrderService
             // Cập nhật revenue, number_of_order và commission của partner
             $partner->revenue -= $order->price;
             $partner->number_of_order -= 1;
-            $partner->commission -= $order->price * ($partner->discount / 100);
+            $partner->commission -= $order->price * ($order->discount / 100);
             $partner->save();
 
             // Cập nhật quantity của các sản phẩm trong đơn hàng

@@ -148,7 +148,7 @@ class PartnerController extends Controller
 
     public function getAll()
     {
-        $partners = Partner::all();
+        $partners = Partner::where('status', 'Active')->get(['id', 'name']);
         return response()->json([
             'success' => true,
             'message' => 'List of all partners',

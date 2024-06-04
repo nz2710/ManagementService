@@ -16,8 +16,8 @@ class CreateDepotsTable extends Migration
         Schema::create('depots', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('address')->nullable();
-            $table->decimal('longitude')->nullable();
-            $table->decimal('latitude')->nullable();
+            $table->decimal('longitude',18,16)->nullable();
+            $table->decimal('latitude',18,16)->nullable();
             $table->string('name')->nullable();
             // $table->time('start_time')->nullable();
             // $table->time('end_time')->nullable();

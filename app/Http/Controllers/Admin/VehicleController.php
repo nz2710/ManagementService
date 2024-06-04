@@ -11,10 +11,10 @@ class VehicleController extends Controller
     public function index(Request $request)
     {
         $name = $request->input('name');
-        $driver_name = $request->input('driver_name');
-        $vehicle_type = $request->input('vehicle_type');
+        // $driver_name = $request->input('driver_name');
+        // $vehicle_type = $request->input('vehicle_type');
         $orderBy = $request->input('order_by', 'id');
-		$sortBy = $request->input('sort_by', 'asc');
+        $sortBy = $request->input('sort_by', 'asc');
 
         $vehicle = Vehicle::orderBy($orderBy, $sortBy);
 
@@ -22,35 +22,40 @@ class VehicleController extends Controller
             $vehicle = $vehicle->where('name', 'like', '%' . $name . '%');
         }
 
-        if ($driver_name) {
-            $vehicle = $vehicle->where('driver_name', 'like', '%' . $driver_name . '%');
-        }
+        // if ($driver_name) {
+        //     $vehicle = $vehicle->where('driver_name', 'like', '%' . $driver_name . '%');
+        // }
 
-        if ($vehicle_type) {
-            $vehicle = $vehicle->where('vehicle_type', 'like', '%' . $vehicle_type . '%');
-        }
+        // if ($vehicle_type) {
+        //     $vehicle = $vehicle->where('vehicle_type', 'like', '%' . $vehicle_type . '%');
+        // }
 
-        $vehicle=$vehicle->paginate(10);
+        $vehicle = $vehicle->paginate(10);
 
         return response()->json([
             'success' => true,
-            'message' => 'List of all vehicles',
+            'message' => 'List of all fleets',
             'data' => $vehicle
         ]);
     }
+
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|max:255',
             'capacity' => 'required|numeric',
-            'velocity' => 'required|numeric',
+            'speed' => 'required|numeric',
+            'total_vehicles' => 'required|numeric',
+            'fuel_consumption' => 'required|numeric',
+            'fuel_cost' => 'required|numeric'
         ]);
         $vehicle = new Vehicle();
         $vehicle->name = $request->name;
         $vehicle->capacity = $request->capacity;
-        $vehicle->velocity = $request->velocity;
-        $vehicle->driver_name = $request->driver_name;
-        $vehicle->vehicle_type = $request->vehicle_type;
+        $vehicle->speed = $request->speed;
+        $vehicle->fuel_consumption = $request->fuel_consumption;
+        $vehicle->fuel_cost = $request->fuel_cost;
+        $vehicle->total_vehicles = $request->total_vehicles;
         $vehicle->save();
         return response()->json([
             'success' => true,
@@ -87,10 +92,12 @@ class VehicleController extends Controller
         if ($vehicle) {
             $vehicle->name = $request->name ?? $vehicle->name;
             $vehicle->capacity = $request->capacity ?? $vehicle->capacity;
-            $vehicle->velocity = $request->velocity ?? $vehicle->velocity;
-            $vehicle->driver_name = $request->driver_name ?? $vehicle->driver_name;
-            $vehicle->vehicle_type = $request->vehicle_type ?? $vehicle->vehicle_type;
+            $vehicle->speed = $request->speed ?? $vehicle->speed;
+            $vehicle->fuel_consumption = $request->fuel_consumption ?? $vehicle->fuel_consumption;
+            $vehicle->fuel_cost = $request->fuel_cost ?? $vehicle->fuel_cost;
+            $vehicle->total_vehicles = $request->total_vehicles ?? $vehicle->total_vehicles;
             $vehicle->status = $request->status ?? $vehicle->status;
+
             $vehicle->save();
             return response()->json([
                 'success' => true,

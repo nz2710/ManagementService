@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Vehicle;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -17,6 +18,11 @@ class ModifyVehiclesTable extends Migration
             $table->dropColumn(['name', 'capacity', 'velocity', 'driver_name', 'vehicle_type', 'status']);
             $table->integer('total_vehicles')->default(0);
         });
+
+        // Tạo một bản ghi mới với total_vehicles = 0
+        Vehicle::create([
+            'total_vehicles' => 0,
+        ]);
     }
 
     /**
@@ -37,4 +43,3 @@ class ModifyVehiclesTable extends Migration
         });
     }
 }
-
