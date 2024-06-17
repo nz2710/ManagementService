@@ -17,9 +17,13 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('sku')->unique();
             $table->text('description')->nullable();
-            $table->decimal('price', 8, 2);
-            $table->integer('quantity');
+            $table->decimal('price', 16, 2);
+            $table->decimal('cost', 16, 2);
+            $table->integer('quantity')->default(0);
+            $table->string('image')->nullable();
+            $table->string('status')->default('Active');
             $table->timestamps();
         });
     }

@@ -45,12 +45,12 @@ class RoutingController extends Controller
 
         $index = 1;
         foreach ($orders as $order) {
-            $fileContent .= "$index {$order->latitude} {$order->longitude} {$order->time_service} {$order->mass_of_order} {$order->id} \n";
+            $fileContent .= "$index {$order->latitude} {$order->longitude} {$order->time_service} {$order->mass_of_order} {$order->id}\n";
             $index++;
         }
 
         foreach ($depots as $depot) {
-            $fileContent .= "$index  {$depot->latitude} {$depot->longitude} 0 0 {$depot->id} \n";
+            $fileContent .= "$index {$depot->latitude} {$depot->longitude} 0 0 {$depot->id}\n";
             $index++;
         }
 
@@ -223,6 +223,8 @@ class RoutingController extends Controller
             'total_vehicle_used' => $plan->total_vehicle_used,
             'total_num_customer_served' => $plan->total_num_customer_served,
             'total_num_customer_not_served' => $plan->total_num_customer_not_served,
+            'created_at' => $plan->created_at,
+            'updated_at' => $plan->updated_at,
             'total_routes' => $routes->total(),
             'routes' => [],
 
@@ -253,9 +255,9 @@ class RoutingController extends Controller
         ]);
     }
 
-    public function getRouteCoordinates($routeId)
+    public function showRoute($routeId)
     {
-        $route = Route::find($routeId);
+        $route = Route::with('depot')->find($routeId);
         if (!$route) {
             return response()->json([
                 'success' => false,
@@ -264,19 +266,30 @@ class RoutingController extends Controller
         }
 
         $orderIds = json_decode($route->route, true);
+        $orders = Order::whereIn('id', $orderIds)
+            ->get(['id', 'customer_name', 'address', 'longitude', 'latitude']);
 
-        $orders = Order::whereIn('id', $orderIds)->get(['id', 'customer_name', 'longitude', 'latitude']);
+        $routeData = [
+            'id' => $route->id,
+            'plan_id' => $route->plan_id,
+            'depot_id' => $route->depot_id,
+            'depot_name' => $route->depot->name,
+            'route' => [],
+            'total_demand' => $route->total_demand,
+            'total_distance' => $route->total_distance,
+            'total_time_serving' => $route->total_time_serving,
+            'is_served' => $route->is_served,
+            'created_at' => $route->created_at,
+            'updated_at' => $route->updated_at,
+        ];
 
-        // Tạo một mảng kết quả trống
-        $orderedCoordinates = [];
-
-        // Sắp xếp các đơn hàng theo thứ tự của orderIds
         foreach ($orderIds as $orderId) {
             $order = $orders->firstWhere('id', $orderId);
             if ($order) {
-                $orderedCoordinates[] = [
+                $routeData['route'][] = [
                     'id' => $order->id,
                     'customer_name' => $order->customer_name,
+                    'address' => $order->address,
                     'longitude' => $order->longitude,
                     'latitude' => $order->latitude
                 ];
@@ -285,7 +298,8 @@ class RoutingController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $orderedCoordinates
+            'message' => 'Route found.',
+            'data' => $routeData
         ]);
     }
 }

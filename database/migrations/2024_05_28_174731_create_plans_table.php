@@ -16,12 +16,17 @@ class CreatePlansTable extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->decimal('total_demand', 20, 15);
-            $table->decimal('total_distance', 20, 15);
-            $table->decimal('total_time_serving', 20, 15);
-            $table->decimal('total_demand_without_allocating_vehicles', 20, 15);
-            $table->decimal('total_distance_without_allocating_vehicles', 20, 15);
-            $table->decimal('total_time_serving_without_allocating_vehicles', 20, 15);
+            $table->decimal('total_demand', 20, 10);
+            $table->decimal('total_distance', 20, 10);
+            $table->decimal('total_time_serving', 20, 10);
+            $table->decimal('total_demand_without_allocating_vehicles', 20, 10);
+            $table->decimal('total_distance_without_allocating_vehicles', 20, 10);
+            $table->decimal('total_time_serving_without_allocating_vehicles', 20, 10);
+            $table->decimal('fee', 20,10 )->nullable();
+            $table->integer('total_vehicle_used')->nullable();
+            $table->integer('total_num_customer_served')->nullable();
+            $table->integer('total_num_customer_not_served')->nullable();
+            $table->string('status')->default('Pending');
             $table->timestamps();
         });
     }

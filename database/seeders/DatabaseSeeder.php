@@ -17,10 +17,10 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         // $this->call(OrdersTableSeeder::class);
-        // $this->call(DepotsTableSeeder::class);
+        $this->call(DepotsTableSeeder::class);
         // $this->call(PartnerSeeder::class);
         // $this->call(ProductSeeder::class);
         // $this->call(OrderProductTableSeeder::class);
-        $this->call(OrderAddressSeeder::class);
+        // $this->call(OrderAddressSeeder::class);
     }
 }

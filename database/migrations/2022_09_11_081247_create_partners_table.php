@@ -19,10 +19,13 @@ class CreatePartnersTable extends Migration
             $table->date('register_date')->nullable();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
+            $table->string('gender')->nullable();
             $table->integer('number_of_order')->default(0);
             $table->decimal('discount', 8, 2)->default(0.00);
-            $table->decimal('revenue', 10, 2)->default(0.00);
-            $table->string('status')->default(1);
+            $table->decimal('revenue', 16, 2)->default(0.00);
+            $table->decimal('commission', 16, 2)->default(0.00);
+            $table->date('date_of_birth')->nullable();
+            $table->string('status')->default('Active');
             $table->timestamps();
         });
     }

@@ -7,8 +7,6 @@ use App\Models\Partner;
 use League\Csv\Reader;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class OrdersTableSeeder extends Seeder
 {
@@ -23,14 +21,14 @@ class OrdersTableSeeder extends Seeder
         $fileContent = file_get_contents($filePath); // Đọc nội dung file
         $lines = explode("\n", $fileContent); // Tách các dòng trong file
 
-        // Đọc dữ liệu từ file output.csv
-        $csvPath = 'output3.csv';
-        $csv = Reader::createFromPath($csvPath, 'r');
-        $csv->setHeaderOffset(0); // Bỏ qua dòng header
+        $csvFilePath = 'output3.csv'; // Đường dẫn tới file CSV chứa thông tin địa chỉ
+        $csv = Reader::createFromPath($csvFilePath, 'r');
+        $csv->setHeaderOffset(0); // Bỏ qua dòng tiêu đề
 
-        $records = $csv->getRecords(['address']);
-        $data = iterator_to_array($records, false);
-
+        $addresses = [];
+        foreach ($csv->getRecords() as $record) {
+            $addresses[] = $record['address'];
+        }
 
         // Khởi tạo Faker để tạo dữ liệu giả
         $faker = Faker::create('vi_VN');
@@ -42,9 +40,6 @@ class OrdersTableSeeder extends Seeder
         foreach ($lines as $index => $line) {
             if (!empty(trim($line))) { // Kiểm tra dòng không trống
                 $data = explode(" ", trim($line)); // Sử dụng tab làm dấu phân cách để tách dữ liệu
-
-                // Lấy địa chỉ từ file output.csv
-                $address = $data[$index]['address'] ?? '';
 
                 // Tạo số điện thoại và tên khách hàng giả
                 $phone = $faker->phoneNumber;
@@ -60,17 +55,20 @@ class OrdersTableSeeder extends Seeder
                 // Tạo thời gian giả từ tháng 1/2024 đến tháng 5/2024
                 $createdAt = $faker->dateTimeBetween('2024-01-01', '2024-05-31');
 
+                // Lấy địa chỉ tương ứng với chỉ mục hiện tại
+                $address = isset($addresses[$index]) ? $addresses[$index] : null;
+
                 // Tạo đối tượng Order mới
                 Order::create([
                     'longitude' => $data[2],
                     'latitude' => $data[1],
                     'time_service' => $data[3],
                     'mass_of_order' => $data[4],
-                    'address' => $address,
                     'phone' => $phone,
                     'customer_name' => $customerName,
                     'partner_id' => $partnerId,
                     'code_order' => $codeOrder,
+                    'address' => $address, // Thêm trường address
                     'created_at' => $createdAt,
                     'updated_at' => $createdAt,
                 ]);

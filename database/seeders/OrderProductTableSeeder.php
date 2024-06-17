@@ -80,10 +80,14 @@ class OrderProductTableSeeder extends Seeder
             // Tính commission (10% của revenue)
             $commission = $revenue * 0.1;
 
+            // Đếm số lượng đơn hàng của partner
+            $numberOfOrders = Order::where('partner_id', $partnerId)->count();
+
             // Cập nhật thông tin partner
             $partner = Partner::find($partnerId);
             $partner->revenue = $revenue;
             $partner->commission = $commission;
+            $partner->number_of_order = $numberOfOrders;
             $partner->save();
         }
     }

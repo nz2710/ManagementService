@@ -17,11 +17,11 @@ class CreateVehiclesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->integer('capacity')->nullable();
-            $table->integer('velocity')->nullable();
-            $table->string('driver_name')->nullable();
-            $table->string('vehicle_type')->nullable();
-            // $table->time('duration')->nullable();
-            $table->string('status')->nullable()->default(1);
+            $table->integer('speed')->nullable();
+            $table->integer('total_vehicles')->default(0);
+            $table->decimal('fuel_consumption', 8, 2)->nullable();
+            $table->decimal('fuel_cost', 8, 2)->nullable();
+            $table->string('status')->default('Active');
             $table->timestamps();
         });
     }

@@ -18,12 +18,11 @@ class CreateRoutesTable extends Migration
             $table->unsignedBigInteger('plan_id');
             $table->unsignedBigInteger('depot_id');
             $table->json('route');
-            $table->decimal('total_demand',20,15);
-            $table->decimal('total_distance',20,15);
-            $table->decimal('total_time_serving',20,15);
+            $table->decimal('total_demand',20,10);
+            $table->decimal('total_distance',20,10);
+            $table->decimal('total_time_serving',20,10);
             $table->boolean('is_served')->nullable();  // Mặc định là được phục vụ
             $table->timestamps();
-
             $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');
             $table->foreign('depot_id')->references('id')->on('depots')->onDelete('cascade');
         });

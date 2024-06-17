@@ -29,7 +29,7 @@ class Product extends Model
         $words = explode(' ', $productName);
         $prefix = '';
         foreach ($words as $word) {
-            $prefix .= strtoupper(substr($word, 0, 1));
+            $prefix .= mb_strtoupper(mb_substr($word, 0, 1, 'UTF-8'), 'UTF-8');
         }
         return $prefix;
     }

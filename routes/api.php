@@ -72,20 +72,14 @@ Route::group([
         Route::get('getProduct', [ProductController::class, 'getAll']);
 
         //Dashboard routes
-        // Route::get('dashboard/total-orders', [DashBoardController::class, 'getTotalOrders']);
-        // Route::get('dashboard/total-revenue', [DashBoardController::class, 'getTotalRevenue']);
-        // Route::get('dashboard/total-partners', [DashBoardController::class, 'getTotalPartners']);
-        // Route::get('dashboard/total-vehicles', [DashBoardController::class, 'getTotalVehicles']);
-        // Route::get('dashboard/total-products', [DashBoardController::class, 'getTotalProduct']);
-        // Route::get('dashboard/total-depots', [DashBoardController::class, 'getTotalDepots']);
         Route::get('dashboard/total-all', [DashBoardController::class, 'getTotalAll']);
         // Route::get('dashboard/summary', [DashBoardController::class, 'getSummaryData']);
         Route::get('dashboard/top-partners', [DashBoardController::class, 'getTopPartners']);
         Route::get('dashboard/top-products', [DashBoardController::class, 'getTopProducts']);
-        // Route::get('dashboard/monthly-revenue', [DashBoardController::class, 'getMonthlyRevenue']);
         Route::get('dashboard/revenue-summary', [DashBoardController::class, 'getRevenueSummary']);
         Route::get('dashboard/itemsold-summary', [DashBoardController::class, 'getItemSoldSummary']);
         Route::get('dashboard/cost-summary', [DashBoardController::class, 'getCostSummary']);
+        Route::get('dashboard/summary', [DashBoardController::class, 'getSummary']);
 
 
         //Routing routes
@@ -93,7 +87,8 @@ Route::group([
         Route::get('routing', [RoutingController::class, 'index']);
         Route::delete('routing/{id}', [RoutingController::class, 'destroy']);
         Route::get('/routing/{id}', [RoutingController::class, 'show']);
-        Route::get('/routing/{routeId}/coordinates', [RoutingController::class, 'getRouteCoordinates']);
+        // Route::get('/routing/{routeId}/coordinates', [RoutingController::class, 'getRouteCoordinates']);
+        Route::get('/route/{routeId}', [RoutingController::class, 'showRoute']);
 
     });
 });

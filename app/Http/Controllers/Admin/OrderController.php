@@ -15,7 +15,6 @@ use App\Rules\ValidateProductQuantityPrice;
 
 class OrderController extends Controller
 {
-    protected $apiKey = 'pk.eyJ1IjoibmdvZHVuZzI3MTAiLCJhIjoiY2x2MjF1eTQxMGR4NjJsbWlsMWZmZHluYiJ9.zBLJ9oWBuSXllU5S0zsS2Q';
 
     protected $productService;
     protected $partnerService;
@@ -92,7 +91,7 @@ class OrderController extends Controller
 
         $client = new Client();
         $address = $request->address;
-        $apiKey = 'VWEykUxNr5f4DReznrCTAtui2DL8iuXXdjapLuJv';
+        $apiKey = env('GOONG_API_KEY');
 
         // Gọi Goong.io Geocoding API để lấy thông tin địa lý từ địa chỉ
         $response = $client->get("https://rsapi.goong.io/geocode?address=" . urlencode($address) . "&api_key=$apiKey");

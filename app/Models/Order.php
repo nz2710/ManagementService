@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class Order extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
     public function partner()
     {
         return $this->belongsTo('App\Models\Partner');

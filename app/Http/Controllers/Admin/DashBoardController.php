@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Validator;
 
 class DashBoardController extends Controller
 {
-
     public function getTotalAll()
     {
         $totalProduct = Product::count();
@@ -35,56 +34,6 @@ class DashBoardController extends Controller
             'totalOrders' => $totalOrders
         ]);
     }
-
-    // public function getSummaryData(Request $request)
-    // {
-    //     $year = $request->input('year');
-    //     $month = $request->input('month');
-    //     $filterType = $request->input('filter_type', 'month');
-
-    //     $query = Order::join('order_product', 'orders.id', '=', 'order_product.order_id')
-    //         ->join('products', 'order_product.product_id', '=', 'products.id')
-    //         ->selectRaw('SUM(orders.price) as revenues')
-    //         ->selectRaw('SUM(order_product.quantity) as items_sold');
-
-    //     if ($filterType === 'year') {
-    //         $validator = Validator::make($request->all(), [
-    //             'year' => 'required|integer|min:2000|max:' . date('Y'),
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             return response()->json(['success' => false, 'message' => $validator->errors()], 400);
-    //         }
-    //         $query->selectRaw('MONTH(orders.created_at) as month')
-    //             ->whereYear('orders.created_at', $year)
-    //             ->groupBy('month')
-    //             ->orderBy('month', 'asc');
-    //     } elseif ($filterType === 'month') {
-    //         $validator = Validator::make($request->all(), [
-    //             'year' => 'required|integer|min:2000|max:' . date('Y'),
-    //             'month' => 'required|integer|min:1|max:12',
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             return response()->json(['success' => false, 'message' => $validator->errors()], 400);
-    //         }
-    //         $query->selectRaw('DATE_FORMAT(orders.created_at, "%d-%m-%Y") as date')
-    //             ->whereYear('orders.created_at', $year)
-    //             ->whereMonth('orders.created_at', $month)
-    //             ->groupBy('date')
-    //             ->orderBy('date', 'asc');
-    //     }
-
-    //     $data = $query->get();
-
-    //     // $data = $query->orderBy('date', 'asc')->get();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' => $data
-    //     ]);
-    // }
-
 
     public function getTopProducts(Request $request)
     {
@@ -159,44 +108,6 @@ class DashBoardController extends Controller
         ]);
     }
 
-    // {
-    //     $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
-    //     $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
-
-    //     if ($startDate && $endDate) {
-    //         $totalRevenue = Order::where('created_at', '>=', $startDate)
-    //             ->where('created_at', '<=', $endDate . ' 23:59:59')
-    //             ->sum('price');
-    //     } else {
-    //         $totalRevenue = Order::sum('price');
-    //     }
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Total of revenue',
-    //         'totalRevenue' => $totalRevenue
-    //     ]);
-    // }
-
-    // public function getTotalPartners(Request $request)
-    // {
-    //     $startDate = $request->input('start_date');
-    //     $endDate = $request->input('end_date');
-
-    //     if ($startDate && $endDate) {
-    //         $totalPartners = Partner::where('created_at', '>=', $startDate)
-    //             ->where('created_at', '<=', $endDate . ' 23:59:59')
-    //             ->count();
-    //     } else {
-    //         $totalPartners = Partner::count();
-    //     }
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Total of partners',
-    //         'totalPartners' => $totalPartners
-    //     ]);
-    // }
     public function getTopPartners(Request $request)
     {
         $year = $request->input('year');
@@ -269,8 +180,6 @@ class DashBoardController extends Controller
             'data' => $data,
         ]);
     }
-
-
     public function getRevenueSummary(Request $request)
     {
         $year = $request->input('year');
@@ -321,7 +230,6 @@ class DashBoardController extends Controller
             'data' => $data,
         ]);
     }
-
     public function getItemSoldSummary(Request $request)
     {
         $year = $request->input('year');
@@ -372,153 +280,4 @@ class DashBoardController extends Controller
             'data' => $data,
         ]);
     }
-
-    public function getCostSummary(Request $request)
-    {
-        $year = $request->input('year');
-        $month = $request->input('month');
-        $filterType = $request->input('filter_type', 'month');
-
-        $validator = Validator::make($request->all(), [
-            'year' => 'required|integer|min:2000|max:' . date('Y'),
-            'month' => 'integer|min:1|max:12',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => $validator->errors()], 400);
-        }
-
-        if ($filterType === 'year') {
-            $data = collect(range(1, 12))->map(function ($month) use ($year) {
-                $cost = OrderProduct::whereYear('order_product.created_at', $year)
-                    ->whereMonth('order_product.created_at', $month)
-                    ->join('products', 'order_product.product_id', '=', 'products.id')
-                    // ->join('orders', 'order_product.order_id', '=', 'orders.id')
-                    ->selectRaw('SUM(order_product.quantity * products.cost) as total_cost')
-                    ->value('total_cost');
-
-                return [
-                    'month' => $month,
-                    'cost' => $cost,
-                ];
-            });
-        } elseif ($filterType === 'month') {
-            $startDate = Carbon::create($year, $month)->startOfMonth();
-            $endDate = Carbon::create($year, $month)->endOfMonth();
-            $daysInMonth = $endDate->diffInDays($startDate) + 1;
-
-            $data = collect(range(1, $daysInMonth))->map(function ($day) use ($year, $month) {
-                $date = Carbon::create($year, $month, $day)->format('d-m-Y');
-
-                $cost = OrderProduct::whereDate('order_product.created_at', Carbon::create($year, $month, $day))
-                    ->join('products', 'order_product.product_id', '=', 'products.id')
-                    ->join('orders', 'order_product.order_id', '=', 'orders.id')
-                    ->selectRaw('SUM(order_product.quantity * products.cost) as total_cost')
-                    ->value('total_cost');
-
-                return [
-                    'date' => $date,
-                    'cost' => $cost,
-                ];
-            });
-        } else {
-            return response()->json(['success' => false, 'message' => 'Invalid filter type'], 400);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
-    }
-
-    // public function getTotalProduct()
-    // {
-    //     $totalProduct = Product::count();
-
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Total of Product',
-    //         'totalProduct' => $totalProduct
-    //     ]);
-    // }
-
-    // public function getTotalVehicles()
-    // {
-    //     $vehicle = Vehicle::first(); // Lấy bản ghi đầu tiên
-    //     $totalVehicles = $vehicle ? $vehicle->total_vehicles : 0; // Kiểm tra nếu bản ghi tồn tại
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Total of vehicles',
-    //         'totalVehicles' => $totalVehicles
-    //     ]);
-    // }
-
-
-    // public function getTotalDepots()
-    // {
-    //     $totalDepots = Depot::count();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Total of depots',
-    //         'totalDepots' => $totalDepots
-    //     ]);
-    // }
-
-    // public function getTotalOrders(Request $request)
-    // {
-    //     // Lấy tham số 'start_date', 'end_date' và 'status' từ request
-    //     $startDate = $request->input('start_date');
-    //     $endDate = $request->input('end_date');
-    //     $status = $request->input('status');
-
-    //     // Tạo query cơ bản
-    //     $query = Order::query();
-
-    //     // Áp dụng bộ lọc theo khoảng thời gian nếu có
-    //     if ($startDate && $endDate) {
-    //         $query->whereBetween('created_at', [$startDate, $endDate . ' 23:59:59']);
-    //     }
-
-    //     // Áp dụng bộ lọc theo trạng thái nếu có
-    //     if ($status) {
-    //         $query->where('status', $status);
-    //     }
-
-    //     // Đếm tổng số đơn hàng theo các bộ lọc đã áp dụng
-    //     $totalOrders = $query->count();
-
-    //     // Trả về dữ liệu dưới dạng JSON
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Total of orders',
-    //         'totalOrders' => $totalOrders
-    //     ]);
-    // }
-
-
-    // public function getTotalRevenue(Request $request)
-    // {
-    //     $startYear = Carbon::parse(Order::min('created_at'))->year;
-    //     $endYear = Carbon::parse(Order::max('created_at'))->year;
-
-    //     $monthlyRevenue = Order::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(price) as revenue')
-    //         ->groupBy('year', 'month')
-    //         ->orderBy('year', 'asc')
-    //         ->orderBy('month', 'asc')
-    //         ->get()
-    //         ->map(function ($row) {
-    //             // Transform the data to be more frontend friendly
-    //             $date = str_pad($row->month, 2, '0', STR_PAD_LEFT) . '-' . $row->year;
-    //             return ['date' => $date, 'revenue' => $row->revenue];
-    //         });
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Monthly revenue',
-    //         'monthlyRevenue' => $monthlyRevenue
-    //     ]);
-    // }
 }

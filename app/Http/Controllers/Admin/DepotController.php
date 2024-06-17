@@ -9,13 +9,12 @@ use Illuminate\Http\Request;
 
 class DepotController extends Controller
 {
-    protected $apiKey = 'pk.eyJ1IjoibmdvZHVuZzI3MTAiLCJhIjoiY2x2MjF1eTQxMGR4NjJsbWlsMWZmZHluYiJ9.zBLJ9oWBuSXllU5S0zsS2Q';
     public function index(Request $request)
     {
         $name = $request->input('name');
         $address = $request->input('address');
         $orderBy = $request->input('order_by', 'id');
-		$sortBy = $request->input('sort_by', 'asc');
+        $sortBy = $request->input('sort_by', 'asc');
 
         $depot = Depot::orderBy($orderBy, $sortBy);
 
@@ -27,7 +26,7 @@ class DepotController extends Controller
             $depot = $depot->where('address', 'like', '%' . $address . '%');
         }
 
-        $depot=$depot->paginate(10);
+        $depot = $depot->paginate(10);
 
         return response()->json([
             'success' => true,
@@ -44,7 +43,8 @@ class DepotController extends Controller
 
         $client = new Client();
         $address = $request->address;
-        $apiKey = 'VWEykUxNr5f4DReznrCTAtui2DL8iuXXdjapLuJv';
+        $apiKey = env('GOONG_API_KEY');
+
 
         // Gọi Goong.io Geocoding API để lấy thông tin địa lý từ địa chỉ
         $response = $client->get("https://rsapi.goong.io/geocode?address=" . urlencode($address) . "&api_key=$apiKey");
@@ -65,7 +65,7 @@ class DepotController extends Controller
         $depot->longitude = $longitude;
         $depot->latitude = $latitude;
         $depot->name = $request->name;
-        $depot->status = 'Active';
+        $depot->phone = $request->phone;
         $depot->save();
 
         return response()->json([
@@ -99,21 +99,27 @@ class DepotController extends Controller
         if ($depot) {
             $client = new Client();
             $address = $request->address ?? $depot->address;
-            $response = $client->get("https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$this->apiKey");
+            $apiKey = env('GOONG_API_KEY');
+            $response = $client->get("https://rsapi.goong.io/geocode?address=" . urlencode($address) . "&api_key=$apiKey");
             $responseBody = json_decode($response->getBody(), true);
 
-            if (empty($responseBody['features'])) {
+            $responseBody = json_decode($response->getBody(), true);
+
+            if (empty($responseBody['results'])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Address does not exist',
                 ], 400);
             }
 
-            $coordinates = $responseBody['features'][0]['geometry']['coordinates'];
+            $location = $responseBody['results'][0]['geometry']['location'];
+            $latitude = $location['lat'];
+            $longitude = $location['lng'];
             $depot->address = $address;
-            $depot->longitude = $coordinates[0];
-            $depot->latitude = $coordinates[1];
+            $depot->longitude = $longitude;
+            $depot->latitude = $latitude;
             $depot->name = $request->name ?? $depot->name;
+            $depot->phone = $request->phone ?? $depot->phone;
             $depot->status = $request->status ?? $depot->status;
             $depot->save();
             return response()->json([
